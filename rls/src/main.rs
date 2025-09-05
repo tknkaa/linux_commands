@@ -1,13 +1,14 @@
+use std::env;
 use std::fs;
 use std::io;
 use std::path::Path;
 
 fn main() -> io::Result<()> {
-    let mut buffer = String::new();
-    io::stdin().read_line(&mut buffer)?;
-    let input = buffer.trim();
+    let args: Vec<String> = env::args().collect();
 
-    let path = Path::new(input);
+    let path_str = if args.len() > 1 { &args[1] } else { "." };
+    let path = Path::new(path_str);
+
     if !path.is_dir() {
         let error_message = format!("'{}' is not a valid directory.", path.display());
         let custom_error = io::Error::new(io::ErrorKind::NotFound, error_message);
