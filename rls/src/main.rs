@@ -8,6 +8,9 @@ use std::path::PathBuf;
 struct Args {
     #[arg(default_value = ".")]
     path: PathBuf,
+
+    #[arg(short = 'a', long = "all")]
+    all: bool,
 }
 
 fn main() -> io::Result<()> {
@@ -23,8 +26,11 @@ fn main() -> io::Result<()> {
 
     for entry in entries {
         let entry = entry?;
-        let file_name = entry.file_name();
-        println!("{}", file_name.to_string_lossy());
+        let file_name = entry.file_name().to_string_lossy().to_string();
+        if !args.all && file_name.starts_with('.') {
+            continue;
+        }
+        println!("{}", file_name);
     }
     Ok(())
 }
