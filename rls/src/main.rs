@@ -1,13 +1,18 @@
-use std::env;
+use clap::Parser;
 use std::fs;
 use std::io;
-use std::path::Path;
+use std::path::PathBuf;
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    #[arg(default_value = ".")]
+    path: PathBuf,
+}
 
 fn main() -> io::Result<()> {
-    let args: Vec<String> = env::args().collect();
-
-    let path_str = if args.len() > 1 { &args[1] } else { "." };
-    let path = Path::new(path_str);
+    let args = Args::parse();
+    let path = args.path;
 
     if !path.is_dir() {
         let error_message = format!("'{}' is not a valid directory.", path.display());
@@ -15,7 +20,6 @@ fn main() -> io::Result<()> {
         return Err(custom_error);
     }
     let entries = fs::read_dir(path)?;
-    println!("Entries in '{}'", path.display());
 
     for entry in entries {
         let entry = entry?;
